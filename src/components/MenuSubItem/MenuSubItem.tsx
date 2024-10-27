@@ -1,3 +1,4 @@
+import { handleClick } from "../../helpers/helpers";
 import { useMenuContext } from "../../MenuProvider";
 import { useBreakpoints } from "../../useBreakpoints";
 
@@ -7,12 +8,11 @@ type MenuSubItemProps = {
 };
 
 export default function MenuSubItem({ title, link }: MenuSubItemProps) {
-    const { currentPath, onChange, toggleMenuOpen } = useMenuContext();
+    const { currentPath, toggleMenuOpen } = useMenuContext();
     const { isMd } = useBreakpoints();
 
-    const handleClick = (path: string, event: React.MouseEvent) => {
-        event.preventDefault();
-        onChange(path);
+    const handleSubItemClick = (path: string, event: React.MouseEvent) => {
+        handleClick(path, event);
         if (!isMd) {
             toggleMenuOpen(false);
         }
@@ -21,10 +21,10 @@ export default function MenuSubItem({ title, link }: MenuSubItemProps) {
     return (
         <a
             href={link}
-            className={`px-2 transition py-1 border-l-2 hover:text-violet-400 overflow-hidden shrink-0 ${
+            className={`px-2 transition py-1 border-l-2 md:hover:text-violet-400 overflow-hidden shrink-0 ${
                 currentPath.includes(link) && "border-violet-400 text-violet-400"
             }`}
-            onClick={(e) => handleClick(link, e)}
+            onClick={(e) => handleSubItemClick(link, e)}
         >
             {title}
         </a>

@@ -1,6 +1,6 @@
 import { BsChevronBarRight } from "react-icons/bs";
 import { useMenuContext } from "../../MenuProvider";
-import { getInitials } from "../../helpers/helpers";
+import { getInitials, handleClick } from "../../helpers/helpers";
 import { useEffect, useState } from "react";
 import { useBreakpoints } from "../../useBreakpoints";
 
@@ -30,7 +30,11 @@ export default function Menu({ title, children }: MenuProps) {
             }`}
         >
             <nav className="flex md:flex-col gap-3 md:gap-2 md:max-h-full md:overflow-y-auto md:overflow-x-clip max-[767px]:overflow-x-auto max-[767px]:items-center max-[767px]:px-4">
-                <a href={defaultPath || "/"} className="mx-auto text-violet-500 font-bold">
+                <a
+                    href={defaultPath}
+                    className="mx-auto text-violet-700 font-bold"
+                    onClick={(e) => handleClick(defaultPath, e)}
+                >
                     {isMenuOpen ? title : getInitials(title)}
                 </a>
                 {children}
@@ -39,7 +43,7 @@ export default function Menu({ title, children }: MenuProps) {
                 <button
                     onClick={() => toggleMenuOpen(!isMenuOpen)}
                     aria-label="Close button"
-                    className="p-2 hover:bg-slate-200 rounded-xl"
+                    className="p-2 md:hover:bg-slate-200 rounded-xl"
                 >
                     <BsChevronBarRight
                         className={`size-6 transition-transform duration-300 ${isMenuOpen && "rotate-180"}`}

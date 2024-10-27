@@ -2,6 +2,7 @@ import { useMenuContext } from "../../MenuProvider";
 import { BsXLg } from "react-icons/bs";
 import { IconType } from "react-icons";
 import { useBreakpoints } from "../../useBreakpoints";
+import { handleClick } from "../../helpers/helpers";
 
 type MenuItemProps = {
     title: string;
@@ -11,12 +12,7 @@ type MenuItemProps = {
 };
 
 export default function MenuItem({ Icon, title, link, children }: MenuItemProps) {
-    const { isMenuOpen, currentPath, toggleMenuOpen, onChange } = useMenuContext();
-
-    const handleClick = (path: string, event: React.MouseEvent) => {
-        event.preventDefault();
-        onChange(path);
-    };
+    const { isMenuOpen, currentPath, toggleMenuOpen } = useMenuContext();
 
     const isCurrentPage = currentPath.includes(link);
     const { isMd } = useBreakpoints();
@@ -48,7 +44,7 @@ export default function MenuItem({ Icon, title, link, children }: MenuItemProps)
                     {title}
                 </span>
             </a>
-            {!isMenuOpen && (
+            {!isMenuOpen && ( // subItems on hover
                 <div
                     className={`bg-slate-600 p-2 pb-0 rounded-md hidden md:group-hover:flex md:max-w-32 flex-col absolute right-4 -translate-y-full translate-x-full -mt-1/2 text-slate-50 max-h-36`}
                 >
@@ -60,13 +56,15 @@ export default function MenuItem({ Icon, title, link, children }: MenuItemProps)
                     <div className="bg-inherit rotate-45 p-1 absolute bottom-2 -translate-y-1/2 left-0 -translate-x-1/2" />
                 </div>
             )}
-            {isMenuOpen && isCurrentPage && children && (
-                <div className="max-[767px]:hidden absolute left-0 bg-slate-100 z-10 md:static flex flex-col gap-2 p-2 md:pl-5">
-                    {children}
-                </div>
-            )}
+            {isMenuOpen &&
+                isCurrentPage &&
+                children && ( // subitems on click
+                    <div className="max-[767px]:hidden absolute left-0 bg-slate-100 z-10 md:static flex flex-col gap-2 p-2 md:pl-5">
+                        {children}
+                    </div>
+                )}
 
-            {children && (
+            {children && ( //subitems on mobile
                 <div
                     className={`md:hidden transition-transform ${!isMenuOpen && isCurrentPage && "translate-y-0"} ${
                         (!isMenuOpen || !isCurrentPage) && "translate-y-full"
@@ -76,7 +74,7 @@ export default function MenuItem({ Icon, title, link, children }: MenuItemProps)
                 >
                     <div className={`md:hidden flex justify-between items-center gap-8`}>
                         <span className="font-bold overflow-hidden">{title}</span>
-                        <button onClick={() => toggleMenuOpen(false)}>
+                        <button onClick={() => toggleMenuOpen(false)} aria-label="close">
                             <BsXLg className={`size-6 shrink-0`} />
                         </button>
                     </div>
