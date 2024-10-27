@@ -1,12 +1,13 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { useLocation } from "react-router-dom";
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { ROUTES } from "./constants/routes";
+import { useBreakpoints } from "./useBreakpoints";
 
 interface MenuContextType {
     isMenuOpen: boolean;
     defaultPath: string;
     currentPath: string;
     toggleMenuOpen: (isOpen: boolean) => void;
+    onChange: (path: string) => void;
 }
 
 const MenuContext = createContext<MenuContextType | undefined>(undefined);
@@ -22,26 +23,35 @@ export const useMenuContext = () => {
 interface MenuProviderProps {
     children: ReactNode;
     defaultPath?: string;
+    onChange: (path: string) => void;
+    currentPath: string;
 }
 
-export const MenuProvider: React.FC<MenuProviderProps> = ({ children, defaultPath = "/" }) => {
-    const location = useLocation();
+export const MenuProvider: React.FC<MenuProviderProps> = ({ children, defaultPath = "/", onChange, currentPath }) => {
     const [isMenuOpen, toggleMenuOpen] = useState(false);
-    const [currentPath, setCurrentPath] = useState(location.pathname);
+    const { isMd } = useBreakpoints();
+
+    const handleChange = useCallback(
+        (path: string) => {
+            onChange(path);
+            const hasSubPath = Object.values(ROUTES).some((basePath) => {
+                return path.startsWith(`${basePath}/`) || basePath.includes(`${path}/`);
+            });
+            if (hasSubPath) {
+                toggleMenuOpen(true);
+            }
+        },
+        [onChange]
+    );
 
     useEffect(() => {
-        const path = location.pathname;
-        setCurrentPath(path);
-        const hasSubPath = Object.values(ROUTES).some((basePath) => {
-            return path.startsWith(`${basePath}/`) || basePath.includes(`${path}/`);
-        });
-        if (hasSubPath) {
-            toggleMenuOpen(true);
+        if (isMd) {
+            handleChange(currentPath);
         }
-    }, [location.pathname]);
+    }, [isMd === null]);
 
     return (
-        <MenuContext.Provider value={{ isMenuOpen, defaultPath, currentPath, toggleMenuOpen }}>
+        <MenuContext.Provider value={{ isMenuOpen, defaultPath, currentPath, toggleMenuOpen, onChange: handleChange }}>
             {children}
         </MenuContext.Provider>
     );

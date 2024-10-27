@@ -9,3 +9,12 @@
 html {
   scrollbar-width: none;
 }
+
+*{
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.max-h-50-vh {
+  max-height: 50vh;
+}

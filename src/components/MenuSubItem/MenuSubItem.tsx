@@ -1,18 +1,32 @@
-import { Link } from "react-router-dom";
-import { MenuSubItemProps } from "../../types/types";
 import { useMenuContext } from "../../MenuProvider";
+import { useBreakpoints } from "../../useBreakpoints";
+
+type MenuSubItemProps = {
+    title: string;
+    link: string;
+};
 
 export default function MenuSubItem({ title, link }: MenuSubItemProps) {
-    const { currentPath } = useMenuContext();
+    const { currentPath, onChange, toggleMenuOpen } = useMenuContext();
+    const { isMd } = useBreakpoints();
+
+    const handleClick = (path: string, event: React.MouseEvent) => {
+        event.preventDefault();
+        onChange(path);
+        if (!isMd) {
+            toggleMenuOpen(false);
+        }
+    };
 
     return (
-        <Link
-            to={link}
-            className={`px-2 transition py-1 border-l-2 hover:text-violet-400 ${
+        <a
+            href={link}
+            className={`px-2 transition py-1 border-l-2 hover:text-violet-400 overflow-hidden shrink-0 ${
                 currentPath.includes(link) && "border-violet-400 text-violet-400"
             }`}
+            onClick={(e) => handleClick(link, e)}
         >
             {title}
-        </Link>
+        </a>
     );
 }
