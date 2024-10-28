@@ -12,7 +12,7 @@ interface BreakpointsType {
     isXl: boolean | null;
 }
 
-export const useBreakpoints = (): BreakpointsType => {
+export const useBreakpoints = (): BreakpointsType & { isBreakpointsReady: boolean } => {
     const [breakpoint, setBreakpoint] = useState<BreakpointsType>({
         isSm: null,
         isMd: null,
@@ -38,5 +38,7 @@ export const useBreakpoints = (): BreakpointsType => {
         };
     }, []);
 
-    return breakpoint;
+    const isBreakpointsReady = Object.values(breakpoint).some((value) => value !== null);
+
+    return { ...breakpoint, isBreakpointsReady };
 };

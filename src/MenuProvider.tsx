@@ -29,7 +29,7 @@ interface MenuProviderProps {
 
 export const MenuProvider: React.FC<MenuProviderProps> = ({ children, defaultPath = "/", onChange, currentPath }) => {
     const [isMenuOpen, toggleMenuOpen] = useState(false);
-    const { isMd } = useBreakpoints();
+    const { isMd, isBreakpointsReady } = useBreakpoints();
 
     const handleChange = useCallback(
         (path: string) => {
@@ -48,7 +48,7 @@ export const MenuProvider: React.FC<MenuProviderProps> = ({ children, defaultPat
         if (isMd) {
             handleChange(currentPath);
         }
-    }, [isMd === null]);
+    }, [isBreakpointsReady]);
 
     return (
         <MenuContext.Provider value={{ isMenuOpen, defaultPath, currentPath, toggleMenuOpen, onChange: handleChange }}>

@@ -2,7 +2,6 @@ import { useMenuContext } from "../../MenuProvider";
 import { BsXLg } from "react-icons/bs";
 import { IconType } from "react-icons";
 import { useBreakpoints } from "../../useBreakpoints";
-import { handleClick } from "../../helpers/helpers";
 
 type MenuItemProps = {
     title: string;
@@ -12,10 +11,15 @@ type MenuItemProps = {
 };
 
 export default function MenuItem({ Icon, title, link, children }: MenuItemProps) {
-    const { isMenuOpen, currentPath, toggleMenuOpen } = useMenuContext();
+    const { isMenuOpen, currentPath, toggleMenuOpen, onChange } = useMenuContext();
 
     const isCurrentPage = currentPath.includes(link);
     const { isMd } = useBreakpoints();
+
+    const handleClick = (path: string, event: React.MouseEvent) => {
+        event.preventDefault();
+        onChange(path);
+    };
 
     return (
         <div className={`group max-[767px]:contents`}>
@@ -73,7 +77,7 @@ export default function MenuItem({ Icon, title, link, children }: MenuItemProps)
                     } max-h-50-vh  absolute bottom-0 left-0 max-[767px]:p-6 max-[767px]:w-full max-[767px]:rounded-t-2xl bg-slate-100 md:static flex flex-col gap-2 md:pl-5 max-[767px]:pb-0 `}
                 >
                     <div className={`md:hidden flex justify-between items-center gap-8`}>
-                        <span className="font-bold overflow-hidden">{title}</span>
+                        <span className="font-bold overflow-hidden text-violet-500">{title}</span>
                         <button onClick={() => toggleMenuOpen(false)} aria-label="close">
                             <BsXLg className={`size-6 shrink-0`} />
                         </button>

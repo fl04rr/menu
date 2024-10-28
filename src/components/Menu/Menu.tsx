@@ -1,6 +1,6 @@
 import { BsChevronBarRight } from "react-icons/bs";
 import { useMenuContext } from "../../MenuProvider";
-import { getInitials, handleClick } from "../../helpers/helpers";
+import { getInitials } from "../../helpers/helpers";
 import { useEffect, useState } from "react";
 import { useBreakpoints } from "../../useBreakpoints";
 
@@ -10,7 +10,7 @@ type MenuProps = {
 };
 
 export default function Menu({ title, children }: MenuProps) {
-    const { defaultPath, isMenuOpen, toggleMenuOpen, currentPath } = useMenuContext();
+    const { defaultPath, isMenuOpen, toggleMenuOpen, currentPath, onChange } = useMenuContext();
 
     const [isInitial, setIsInitial] = useState(false); // fix onload blink
     const { isMd } = useBreakpoints();
@@ -22,6 +22,11 @@ export default function Menu({ title, children }: MenuProps) {
     }, [currentPath]);
 
     if (!isInitial || isMd === null) return null;
+
+    const handleClick = (path: string, event: React.MouseEvent) => {
+        event.preventDefault();
+        onChange(path);
+    };
 
     return (
         <section
