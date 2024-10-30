@@ -1,16 +1,11 @@
 import { BsChevronBarRight } from "react-icons/bs";
 import { useMenuContext } from "../../MenuProvider";
-import { getInitials } from "../../helpers/helpers";
 import { useEffect, useState } from "react";
 import { useBreakpoints } from "../../useBreakpoints";
+import { MenuProps } from "../../types/types";
 
-type MenuProps = {
-    children: React.ReactNode;
-    title: string;
-};
-
-export default function Menu({ title, children }: MenuProps) {
-    const { defaultPath, isMenuOpen, toggleMenuOpen, currentPath, onChange } = useMenuContext();
+export default function Menu({ children }: MenuProps) {
+    const { isMenuOpen, toggleMenuOpen } = useMenuContext();
 
     const [isInitial, setIsInitial] = useState(false); // fix onload blink
     const { isMd } = useBreakpoints();
@@ -19,14 +14,9 @@ export default function Menu({ title, children }: MenuProps) {
         if (!isInitial) {
             setIsInitial(true);
         }
-    }, [currentPath]);
+    }, []);
 
     if (!isInitial || isMd === null) return null;
-
-    const handleClick = (path: string, event: React.MouseEvent) => {
-        event.preventDefault();
-        onChange(path);
-    };
 
     return (
         <section
@@ -35,13 +25,6 @@ export default function Menu({ title, children }: MenuProps) {
             }`}
         >
             <nav className="flex md:flex-col gap-3 md:gap-2 md:max-h-full md:overflow-y-auto md:overflow-x-clip max-[767px]:overflow-x-auto max-[767px]:items-center max-[767px]:px-4">
-                <a
-                    href={defaultPath}
-                    className="mx-auto text-violet-700 font-bold"
-                    onClick={(e) => handleClick(defaultPath, e)}
-                >
-                    {isMenuOpen ? title : getInitials(title)}
-                </a>
                 {children}
             </nav>
             <div className="p-2 hidden md:block">

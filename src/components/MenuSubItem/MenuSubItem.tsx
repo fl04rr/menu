@@ -1,32 +1,26 @@
 import { useMenuContext } from "../../MenuProvider";
+import { MenuSubItemProps } from "../../types/types";
 import { useBreakpoints } from "../../useBreakpoints";
 
-type MenuSubItemProps = {
-    title: string;
-    link: string;
-};
-
-export default function MenuSubItem({ title, link }: MenuSubItemProps) {
-    const { currentPath, toggleMenuOpen, onChange } = useMenuContext();
+export default function MenuSubItem({ title, handleClick, isActive }: MenuSubItemProps) {
+    const { toggleMenuOpen } = useMenuContext();
     const { isMd } = useBreakpoints();
 
-    const handleClick = (path: string, event: React.MouseEvent) => {
-        event.preventDefault();
-        onChange(path);
+    const onClick = () => {
+        handleClick();
         if (!isMd) {
             toggleMenuOpen(false);
         }
     };
 
     return (
-        <a
-            href={link}
-            className={`px-2 transition py-1 border-l-2 md:hover:text-violet-400 max-[767px]:border-violet-400 overflow-hidden shrink-0 ${
-                currentPath.includes(link) && "border-violet-400 text-violet-400"
+        <button
+            className={`px-2 text-left transition py-1 border-l-2 md:hover:text-violet-400 max-[767px]:border-violet-400 overflow-hidden shrink-0 ${
+                isActive && "border-violet-400 text-violet-400"
             }`}
-            onClick={(e) => handleClick(link, e)}
+            onClick={onClick}
         >
             {title}
-        </a>
+        </button>
     );
 }

@@ -1,13 +1,8 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
-import { ROUTES } from "./constants/routes";
-import { useBreakpoints } from "./useBreakpoints";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface MenuContextType {
     isMenuOpen: boolean;
-    defaultPath: string;
-    currentPath: string;
     toggleMenuOpen: (isOpen: boolean) => void;
-    onChange: (path: string) => void;
 }
 
 const MenuContext = createContext<MenuContextType | undefined>(undefined);
@@ -22,36 +17,18 @@ export const useMenuContext = () => {
 
 interface MenuProviderProps {
     children: ReactNode;
-    defaultPath?: string;
-    onChange: (path: string) => void;
-    currentPath: string;
 }
 
-export const MenuProvider: React.FC<MenuProviderProps> = ({ children, defaultPath = "/", onChange, currentPath }) => {
+export const MenuProvider: React.FC<MenuProviderProps> = ({ children }) => {
     const [isMenuOpen, toggleMenuOpen] = useState(false);
-    const { isMd, isBreakpointsReady } = useBreakpoints();
-
-    const handleChange = useCallback(
-        (path: string) => {
-            onChange(path);
-            const hasSubPath = Object.values(ROUTES).some((basePath) => {
-                return path.startsWith(`${basePath}/`) || basePath.includes(`${path}/`);
-            });
-            if (hasSubPath) {
-                toggleMenuOpen(true);
-            }
-        },
-        [onChange]
-    );
-
-    useEffect(() => {
-        if (isMd) {
-            handleChange(currentPath);
-        }
-    }, [isBreakpointsReady]);
 
     return (
-        <MenuContext.Provider value={{ isMenuOpen, defaultPath, currentPath, toggleMenuOpen, onChange: handleChange }}>
+        <MenuContext.Provider
+            value={{
+                isMenuOpen,
+                toggleMenuOpen,
+            }}
+        >
             {children}
         </MenuContext.Provider>
     );
