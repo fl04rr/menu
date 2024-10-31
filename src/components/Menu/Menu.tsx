@@ -1,6 +1,5 @@
 import { BsChevronBarRight } from "react-icons/bs";
 import { useMenuContext } from "../../MenuProvider";
-import { useEffect, useState } from "react";
 import { useBreakpoints } from "../../useBreakpoints";
 import { MenuProps } from "../../types/types";
 
