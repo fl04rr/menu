@@ -1,16 +1,32 @@
 import { useMenuContext } from "../../MenuProvider";
 import { BsXLg } from "react-icons/bs";
 import { useBreakpoints } from "../../useBreakpoints";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { MenuItemProps, MenuSubItemProps } from "../../types/types";
 
-export default function MenuItem({ Icon, title, isActive, children, handleClick }: MenuItemProps) {
+export default function MenuItem({
+    Icon,
+    title,
+    isActive: isActiveProp,
+    children,
+    handleClick: handleClickProp,
+}: MenuItemProps) {
     const { isMenuOpen, toggleMenuOpen } = useMenuContext();
     const { isMd } = useBreakpoints();
+    const [isActive, setIsActive] = useState(isActiveProp || false);
+    const [handleClick, setHandleClick] = useState(() => handleClickProp);
+
+    useEffect(() => {
+        setIsActive(isActiveProp || false);
+    }, [isActiveProp]);
+
+    useEffect(() => {
+        setHandleClick(() => handleClickProp);
+    }, [handleClickProp]);
 
     const handleMenuItemClick = () => {
         if (!isMd && children) {
-            isActive = true;
+            setIsActive(true);
             toggleMenuOpen(!isMenuOpen);
         }
         if (handleClick) {
@@ -18,17 +34,21 @@ export default function MenuItem({ Icon, title, isActive, children, handleClick 
         }
     };
 
-    if (children) {
-        const firstChild = children[0];
-        if (React.isValidElement<MenuSubItemProps>(firstChild)) {
-            handleClick = firstChild.props.handleClick;
+    useEffect(() => {
+        if (children) {
+            const firstChild = React.Children.toArray(children)[0];
+            if (React.isValidElement<MenuSubItemProps>(firstChild)) {
+                setHandleClick(() => firstChild.props.handleClick);
+            }
+            if (isActiveProp === undefined) {
+                setIsActive(
+                    React.Children.toArray(children).some(
+                        (child) => React.isValidElement<MenuSubItemProps>(child) && child.props.isActive
+                    )
+                );
+            }
         }
-        if (isActive === undefined) {
-            isActive = React.Children.toArray(children).some(
-                (child) => React.isValidElement<MenuSubItemProps>(child) && child.props.isActive
-            );
-        }
-    }
+    }, [children, isActiveProp]);
 
     return (
         <div className={`group max-[767px]:contents`}>
@@ -47,7 +67,7 @@ export default function MenuItem({ Icon, title, isActive, children, handleClick 
                     {title}
                 </span>
             </button>
-            {!isMenuOpen && ( // subItems on hover
+            {!isMenuOpen && (
                 <div
                     className={`bg-slate-600 p-2 pb-0 rounded-md hidden md:group-hover:flex md:max-w-32 flex-col absolute right-4 -translate-y-full translate-x-full -mt-1/2 text-slate-50 max-h-36`}
                 >
@@ -55,20 +75,17 @@ export default function MenuItem({ Icon, title, isActive, children, handleClick 
                         {title}
                     </span>
                     <div className="flex flex-col h-full overflow-y-auto pb-2">{children}</div>
-
                     <div className="bg-inherit rotate-45 p-1 absolute bottom-2 -translate-y-1/2 left-0 -translate-x-1/2" />
                 </div>
             )}
 
-            {isMenuOpen &&
-                isActive &&
-                children && ( // subitems on click
-                    <div className="max-[767px]:hidden absolute left-0 bg-slate-100 z-10 md:static flex flex-col gap-2 p-2 md:pl-5">
-                        {children}
-                    </div>
-                )}
+            {isMenuOpen && isActive && children && (
+                <div className="max-[767px]:hidden absolute left-0 bg-slate-100 z-10 md:static flex flex-col gap-2 p-2 md:pl-5">
+                    {children}
+                </div>
+            )}
 
-            {children && ( //subitems on mobile
+            {children && (
                 <div
                     className={`md:hidden transition-transform ${!isMenuOpen && isActive && "translate-y-0"} ${
                         (!isMenuOpen || !isActive) && "translate-y-full"

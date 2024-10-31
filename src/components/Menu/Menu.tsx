@@ -6,17 +6,9 @@ import { MenuProps } from "../../types/types";
 
 export default function Menu({ children }: MenuProps) {
     const { isMenuOpen, toggleMenuOpen } = useMenuContext();
-
-    const [isInitial, setIsInitial] = useState(false); // fix onload blink
     const { isMd } = useBreakpoints();
 
-    useEffect(() => {
-        if (!isInitial) {
-            setIsInitial(true);
-        }
-    }, []);
-
-    if (!isInitial || isMd === null) return null;
+    if (isMd === null) return null;
 
     return (
         <section
